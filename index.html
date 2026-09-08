@@ -484,7 +484,7 @@ src="https://www.facebook.com/tr?id=PIXEL_ID_HERE&ev=PageView&noscript=1"
         <input type="hidden" id="pkgName" name="package">
         <input type="hidden" id="pkgTotal" name="total">
 
-        <button type="submit" class="btn block" id="submitBtn">Sahkan Tempahan — <span id="btnAmt">RM99</span></button>
+        <button type="button" class="btn block" id="submitBtn">Sahkan Tempahan — <span id="btnAmt">RM99</span></button>
 
         <div class="trust-row">
           <span>🔒 Data anda selamat</span>
@@ -608,9 +608,9 @@ function validate(){
   document.getElementById(id).addEventListener('input', validate);
 });
 
-form.addEventListener('submit', function(e){
-  e.preventDefault();
-  if(!validate()) return;
+function handleOrderSubmit(e){
+  if(e && e.preventDefault) e.preventDefault();
+  if(!validate()) return false;
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Sedang menghantar...';
@@ -654,6 +654,16 @@ form.addEventListener('submit', function(e){
     console.warn('GOOGLE_SCRIPT_URL belum ditetapkan. Sila rujuk README.md untuk setup Google Sheet.');
     finishSuccess();
   }
+}
+
+// Primary trigger: direct button click (does not depend on native form submission at all)
+submitBtn.addEventListener('click', handleOrderSubmit);
+
+// Safety net: if the form is ever submitted natively (e.g. pressing Enter in a field),
+// intercept it the same way instead of letting the browser reload the page.
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  handleOrderSubmit(e);
 });
 </script>
 
